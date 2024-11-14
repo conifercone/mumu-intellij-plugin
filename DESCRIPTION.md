@@ -1,4 +1,4 @@
-<p><b>🎉 Your Coding Buddy – The plugin contains a set of useful functions, Inspired by growth, driven by passion, and always open-source! 🎉</b></p>
+<p><b>The plugin is a powerful and versatile set of tools designed to enhance the development experience of software engineers.</b></p>
 <br/>
 <p>
     <b>
@@ -9,5 +9,5 @@
 <br/>
 <h2>Features</h2>
 <ul>
-    <li></li>
+    <li>Add comments to files and folders: In the project view, right-click the file or folder to which you want to add comments and click Add Comment.</li>
 </ul>
