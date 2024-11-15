@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.0.1] - 2024-11-15
+
+### Fixed
+
+- Fixed the problem of incorrect display of notes when switching items.
+
 ## [1.0.0] - 2024-11-14
 
 ### Added
@@ -22,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add comments to files and folders.
 
 [//]: # (@formatter:off)
-[unreleased]: https://github.com/conifercone/mumu-intellij-plugin/compare/v1.0.0...develop
+[unreleased]: https://github.com/conifercone/mumu-intellij-plugin/compare/v1.0.1...develop
+[1.0.1]: https://github.com/conifercone/mumu/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/conifercone/mumu-intellij-plugin/releases/tag/v1.0.0
 [//]: # (@formatter:on)

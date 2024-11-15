@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2024-2024, the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,6 @@
 package baby.mumu.intellij.listeners;
 
 import baby.mumu.intellij.services.CommentService;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManagerListener;
 import org.jetbrains.annotations.NotNull;
@@ -31,8 +30,7 @@ public class CommentFileUpdateListener implements ProjectManagerListener {
 
   @Override
   public void projectClosed(@NotNull Project project) {
-    CommentService commentService = ApplicationManager.getApplication()
-      .getService(CommentService.class);
+    CommentService commentService = project.getService(CommentService.class);
     commentService.saveCommentsToFile(project);
   }
 }

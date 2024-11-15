@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2024-2024, the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,7 @@ import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
-import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +36,10 @@ public class AddCommentAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    Project project = e.getProject();
+    if (project == null) {
+      return;
+    }
     VirtualFile selectedFile = e.getData(PlatformCoreDataKeys.VIRTUAL_FILE);
     if (selectedFile == null) {
       Messages.showMessageDialog("No file or folder selected", "Error", Messages.getErrorIcon());
@@ -46,13 +50,11 @@ public class AddCommentAction extends AnAction {
     String comment = Messages.showInputDialog("Please enter comment:", "Add Comment",
       Messages.getQuestionIcon());
     if (StringUtils.isNotBlank(comment)) {
-      CommentService commentService = ApplicationManager.getApplication()
+      CommentService commentService = project
         .getService(CommentService.class);
-      if (e.getProject() != null) {
-        commentService.addCommentForFile(e.getProject(), selectedFile, comment);
-        selectedFile.refresh(false, true);
-        ProjectView.getInstance(e.getProject()).refresh();
-      }
+      commentService.addCommentForFile(project, selectedFile, comment);
+      selectedFile.refresh(false, true);
+      ProjectView.getInstance(project).refresh();
     }
   }
 }
