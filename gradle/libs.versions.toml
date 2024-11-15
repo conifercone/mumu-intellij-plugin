@@ -8,7 +8,7 @@ jacksonBomVersion = '2.18.0'
 guavaBomVersion = '33.3.1-jre'
 # plugin version
 kotlinPluginVersion = '2.0.21'
-intellijPluginVersion = '1.17.4'
+intellijPluginVersion = '2.1.0'
 changelogPluginVersion = '2.2.0'
 
 [libraries]
@@ -44,4 +44,4 @@ jackson = ["jackson-core", "jackson-databind", "jackson-annotations", "jackson-d
 java = { id = "java" }
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelogPluginVersion" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPluginVersion" }
-intellij = { id = "org.jetbrains.intellij", version.ref = "intellijPluginVersion" }
+intellij = { id = "org.jetbrains.intellij.platform", version.ref = "intellijPluginVersion" }

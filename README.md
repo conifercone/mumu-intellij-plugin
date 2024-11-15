@@ -8,7 +8,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/conifercone/mumu-intellij-plugin/badge)](https://www.codefactor.io/repository/github/conifercone/mumu-intellij-plugin)
 ![GitHub repo size](https://img.shields.io/github/repo-size/conifercone/mumu-intellij-plugin)
 ![GitHub top language](https://img.shields.io/github/languages/top/conifercone/mumu-intellij-plugin)
-[![JDK version](https://img.shields.io/badge/JDK-17+-green.svg)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+[![JDK version](https://img.shields.io/badge/JDK-21+-green.svg)](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
 [![GitHub License](https://img.shields.io/github/license/conifercone/mumu-intellij-plugin)](https://github.com/conifercone/mumu-intellij-plugin)
 [![GitHub issues](https://img.shields.io/github/issues/conifercone/mumu-intellij-plugin)](https://github.com/conifercone/mumu-intellij-plugin/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/conifercone/mumu-intellij-plugin)](https://github.com/conifercone/mumu-intellij-plugin/pulls)
