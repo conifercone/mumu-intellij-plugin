@@ -50,5 +50,8 @@
       implementation="baby.mumu.intellij.decorators.CommentsDecorator"/>
     <backgroundPostStartupActivity
       implementation="baby.mumu.intellij.activities.LoadCommentsProjectActivity"/>
+    <statusBarWidgetFactory
+      implementation="baby.mumu.intellij.widgets.ToggleCommentVisibilityWidgetFactory"
+      id="ToggleCommentVisibilityWidget"/>
   </extensions>
 </idea-plugin>

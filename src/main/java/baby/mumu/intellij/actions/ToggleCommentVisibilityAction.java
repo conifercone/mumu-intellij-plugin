@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -53,5 +54,6 @@ public class ToggleCommentVisibilityAction extends AnAction {
     }
     project.getProjectFile().refresh(false, true);
     ProjectView.getInstance(e.getProject()).refresh();
+    WindowManager.getInstance().getStatusBar(project).updateWidget("ToggleCommentVisibilityWidget");
   }
 }
