@@ -1,0 +1,139 @@
+/*
+ * Copyright (c) 2024-2024, the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package baby.mumu.intellij.kotlin.services
+
+import baby.mumu.intellij.kotlin.dos.MuMuComment
+import baby.mumu.intellij.kotlin.dos.MuMuComments
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import org.apache.commons.lang3.StringUtils
+import org.flywaydb.core.Flyway
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.io.File
+
+@Suppress("SqlNoDataSourceInspection")
+private const val PRAGMA_USER_VERSION_ = "PRAGMA user_version;"
+
+/**
+ * 注释数据库服务
+ *
+ * @author <a href="mailto:kaiyu.shan@outlook.com">kaiyu.shan</a>
+ * @since 1.1.0
+ */
+object CommentDbService {
+
+    var connected = false
+
+    fun connectDatabase(project: Project) {
+        // 将路径转换为字符串并连接到数据库
+        val url = "jdbc:sqlite:" + File(
+            File(project.basePath, ".idea"),
+            "mumu_comments.db"
+        ).path.replace("\\", "/")
+        Database.connect(
+            url, "org.sqlite.JDBC"
+        )
+        transaction {
+            // 执行一个简单的查询，如检查表是否存在（即使表可能不存在，也不会报错）
+            exec(PRAGMA_USER_VERSION_) // 查询数据库版本号
+        }
+        val currentThread = Thread.currentThread()
+        val originalClassLoader = currentThread.contextClassLoader
+        val pluginClassLoader = javaClass.classLoader
+        try {
+            currentThread.contextClassLoader = pluginClassLoader
+            // 设置 Flyway 配置
+            val flyway = Flyway.configure()
+                .dataSource(
+                    url, null, null
+                )
+                .load()
+            // 执行迁移
+            flyway.migrate()
+            connected = true
+        } finally {
+            currentThread.contextClassLoader = originalClassLoader
+        }
+    }
+
+    /**
+     * 新增注释
+     */
+    fun insertComment(project: Project, virtualFile: VirtualFile, comment: String) {
+        transaction {
+            MuMuComments.insert {
+                it[relativePath] = getRelativePath(project, virtualFile)
+                it[MuMuComments.comment] = comment
+            }
+        }
+    }
+
+    /**
+     * 根据 relativePath 获取 MuMuComments 对象
+     */
+    fun getByRelativePath(project: Project, virtualFile: VirtualFile): MuMuComment? {
+        return transaction {
+            MuMuComments
+                .selectAll()
+                .where(MuMuComments.relativePath.eq(getRelativePath(project, virtualFile)))
+                .map { row ->
+                    MuMuComment(
+                        id = row[MuMuComments.id],
+                        relativePath = row[MuMuComments.relativePath],
+                        comment = row[MuMuComments.comment]
+                    )
+                }.singleOrNull() // 如果没有匹配的结果返回 null
+        }
+    }
+
+    fun removeById(id: Int) {
+        transaction {
+            MuMuComments.deleteWhere { MuMuComments.id eq id }
+        }
+    }
+
+    /**
+     * 更新注释
+     */
+    fun updateComment(project: Project, virtualFile: VirtualFile, comment: String) {
+        transaction {
+            MuMuComments.update(where = {
+                MuMuComments.relativePath eq getRelativePath(
+                    project,
+                    virtualFile
+                )
+            }) {
+                it[MuMuComments.comment] = comment
+            }
+        }
+    }
+
+    private fun getRelativePath(
+        project: Project,
+        file: VirtualFile
+    ): String {
+        if (StringUtils.isBlank(project.basePath)) {
+            return ""
+        }
+        return if (file.path == project.basePath) {
+            "./"
+        } else {
+            file.path.replace(project.basePath!!, ".")
+        }
+    }
+}

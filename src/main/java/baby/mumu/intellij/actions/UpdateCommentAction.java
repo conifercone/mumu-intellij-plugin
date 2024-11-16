@@ -22,19 +22,19 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 删除注释动作
+ * 更新注释动作
  *
  * @author <a href="mailto:kaiyu.shan@outlook.com">kaiyu.shan</a>
- * @since 1.0.0
+ * @since 1.1.0
  */
-public class RemoveCommentAction extends AnAction {
+public class UpdateCommentAction extends AnAction {
 
   @Override
   public void update(@NotNull AnActionEvent e) {
@@ -53,13 +53,14 @@ public class RemoveCommentAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    //noinspection DuplicatedCode
     Project project = e.getProject();
     if (project == null) {
       return;
     }
-    // 获取当前选中的文件
-    VirtualFile selectedFile = e.getData(PlatformDataKeys.VIRTUAL_FILE);
+    VirtualFile selectedFile = e.getData(PlatformCoreDataKeys.VIRTUAL_FILE);
     if (selectedFile == null) {
+      Messages.showMessageDialog("No file or folder selected", "Error", Messages.getErrorIcon());
       return;
     }
 
@@ -70,17 +71,12 @@ public class RemoveCommentAction extends AnAction {
       Messages.showMessageDialog("This file has no comment", "Hint", Messages.getInformationIcon());
       return;
     }
-
-    int result = Messages.showYesNoDialog(
-      "Are you sure you want to delete the comment for this file?", // 提示消息
-      "Delete Comment", // 标题
-      Messages.getQuestionIcon() // 图标
-    );
-
-    // 如果用户选择了 "是"
-    if (result == Messages.YES) {
-      CommentDbService.INSTANCE.removeById(existingComment.getId());
-      selectedFile.refresh(false, true); // 刷新文件
+    // 显示对话框获取注释内容
+    String comment = Messages.showInputDialog(project, "Please enter comment:", "Update Comment",
+      Messages.getQuestionIcon(), existingComment.getComment(), null);
+    if (StringUtils.isNotBlank(comment)) {
+      CommentDbService.INSTANCE.updateComment(project, selectedFile, comment);
+      selectedFile.refresh(false, true);
       ProjectView.getInstance(project).refresh();
     }
   }
