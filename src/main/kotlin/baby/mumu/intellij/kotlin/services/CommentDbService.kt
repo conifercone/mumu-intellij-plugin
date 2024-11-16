@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2024-2024, the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -107,6 +107,22 @@ object CommentDbService {
         }
     }
 
+    fun removeByRelativePath(project: Project, virtualFile: VirtualFile) {
+        transaction {
+            MuMuComments.deleteWhere { relativePath eq getRelativePath(project, virtualFile) }
+        }
+    }
+
+    fun updateRelativePathByRelativePath(oldPath: String, newPath: String) {
+        transaction {
+            // 更新与 oldPath 关联的注释记录的 relativePath
+            MuMuComments
+                .update({ MuMuComments.relativePath eq oldPath }) {
+                    it[relativePath] = newPath
+                }
+        }
+    }
+
     /**
      * 更新注释
      */
@@ -134,6 +150,20 @@ object CommentDbService {
             "./"
         } else {
             file.path.replace(project.basePath!!, ".")
+        }
+    }
+
+    fun getRelativePath(
+        project: Project,
+        path: String
+    ): String {
+        if (StringUtils.isBlank(project.basePath)) {
+            return ""
+        }
+        return if (path == project.basePath) {
+            "./"
+        } else {
+            path.replace(project.basePath!!, ".")
         }
     }
 }

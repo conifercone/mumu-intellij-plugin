@@ -18,6 +18,14 @@ package baby.mumu.intellij.activities;
 import baby.mumu.intellij.kotlin.services.CommentDbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.ProjectActivity;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.newvfs.BulkFileListener;
+import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
+import java.util.List;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +43,46 @@ public class LoadCommentsProjectActivity implements ProjectActivity {
   public @Nullable Object execute(@NotNull Project project,
     @NotNull Continuation<? super Unit> continuation) {
     CommentDbService.INSTANCE.connectDatabase(project);
+    project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES,
+      new BulkFileListener() {
+        @Override
+        public void after(@NotNull List<? extends VFileEvent> events) {
+          if (CommentDbService.INSTANCE.getConnected()) {
+            List<VFileDeleteEvent> fileDeleteEvents = events.stream()
+              .filter(event -> event instanceof VFileDeleteEvent)
+              .map(event -> (VFileDeleteEvent) event)
+              .toList();
+            List<VFilePropertyChangeEvent> filePropertyChangeEvents = events.stream()
+              .filter(event -> event instanceof VFilePropertyChangeEvent)
+              .map(event -> (VFilePropertyChangeEvent) event)
+              .toList();
+            List<VFileMoveEvent> fileMoveEvents = events.stream()
+              .filter(event -> event instanceof VFileMoveEvent)
+              .map(event -> (VFileMoveEvent) event)
+              .toList();
+            fileDeleteEvents.forEach(event -> {
+              VirtualFile file = event.getFile();
+              CommentDbService.INSTANCE.removeByRelativePath(project, file);
+            });
+            filePropertyChangeEvents.forEach(
+              event -> processPathChange(project, event.getOldPath(), event.getNewPath()));
+            fileMoveEvents.forEach(
+              event -> processPathChange(project, event.getOldPath(), event.getNewPath()));
+          }
+        }
+
+        private void processPathChange(@NotNull Project project, String oldPath, String newPath) {
+          String oldRelativePath = CommentDbService.INSTANCE.getRelativePath(project,
+            oldPath);
+          String newRelativePath = CommentDbService.INSTANCE.getRelativePath(project,
+            newPath);
+          // 如果路径发生变化，更新数据库中的数据
+          if (!oldRelativePath.equals(newRelativePath)) {
+            CommentDbService.INSTANCE.updateRelativePathByRelativePath(oldRelativePath,
+              newRelativePath);
+          }
+        }
+      });
     return null;
   }
 }
