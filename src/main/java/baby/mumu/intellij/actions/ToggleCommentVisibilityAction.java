@@ -15,13 +15,14 @@
  */
 package baby.mumu.intellij.actions;
 
-import baby.mumu.intellij.services.CommentService;
+import baby.mumu.intellij.services.CommentConfigService;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,10 +40,10 @@ public class ToggleCommentVisibilityAction extends AnAction {
       return;
     }
 
-    CommentService commentService = project.getService(CommentService.class);
+    CommentConfigService commentConfigService = project.getService(CommentConfigService.class);
     // 切换注释显示状态
-    boolean newState = !commentService.isCommentsVisible();
-    commentService.setCommentsVisible(newState);
+    boolean newState = !commentConfigService.isCommentsVisible();
+    commentConfigService.setCommentsVisible(newState);
 
     // 刷新 Project View 以更新显示
     VirtualFile projectFile = project.getProjectFile();
@@ -53,5 +54,6 @@ public class ToggleCommentVisibilityAction extends AnAction {
     }
     project.getProjectFile().refresh(false, true);
     ProjectView.getInstance(e.getProject()).refresh();
+    WindowManager.getInstance().getStatusBar(project).updateWidget("ToggleCommentVisibilityWidget");
   }
 }

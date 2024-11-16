@@ -15,8 +15,9 @@
  */
 package baby.mumu.intellij.actions;
 
-import baby.mumu.intellij.services.CommentService;
+import baby.mumu.intellij.kotlin.services.CommentDbService;
 import com.intellij.ide.projectView.ProjectView;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
@@ -35,7 +36,22 @@ import org.jetbrains.annotations.NotNull;
 public class AddCommentAction extends AnAction {
 
   @Override
+  public void update(@NotNull AnActionEvent e) {
+    Project project = e.getProject();
+    VirtualFile selectedFile = e.getData(PlatformCoreDataKeys.VIRTUAL_FILE);
+    e.getPresentation().setEnabled(
+      project != null && selectedFile != null && CommentDbService.INSTANCE.getConnected()
+        && CommentDbService.INSTANCE.getByRelativePath(project, selectedFile) == null);
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
+  }
+
+  @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    //noinspection DuplicatedCode
     Project project = e.getProject();
     if (project == null) {
       return;
@@ -50,9 +66,7 @@ public class AddCommentAction extends AnAction {
     String comment = Messages.showInputDialog("Please enter comment:", "Add Comment",
       Messages.getQuestionIcon());
     if (StringUtils.isNotBlank(comment)) {
-      CommentService commentService = project
-        .getService(CommentService.class);
-      commentService.addCommentForFile(project, selectedFile, comment);
+      CommentDbService.INSTANCE.insertComment(project, selectedFile, comment);
       selectedFile.refresh(false, true);
       ProjectView.getInstance(project).refresh();
     }

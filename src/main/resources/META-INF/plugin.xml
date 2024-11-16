@@ -23,7 +23,11 @@
         text="Add Comment"
         description="Add comment to selected files or folders">
       </action>
-
+      <action id="UpdateCommentAction"
+        class="baby.mumu.intellij.actions.UpdateCommentAction"
+        text="Update Comment"
+        description="Update comment to selected files or folders">
+      </action>
       <action id="RemoveCommentAction"
         class="baby.mumu.intellij.actions.RemoveCommentAction"
         text="Delete Comment"
@@ -41,10 +45,13 @@
   <!-- Extension points defined by the plugin.
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
   <extensions defaultExtensionNs="com.intellij">
-    <projectService serviceImplementation="baby.mumu.intellij.services.CommentService"/>
+    <projectService serviceImplementation="baby.mumu.intellij.services.CommentConfigService"/>
     <projectViewNodeDecorator
       implementation="baby.mumu.intellij.decorators.CommentsDecorator"/>
     <backgroundPostStartupActivity
       implementation="baby.mumu.intellij.activities.LoadCommentsProjectActivity"/>
+    <statusBarWidgetFactory
+      implementation="baby.mumu.intellij.widgets.ToggleCommentVisibilityWidgetFactory"
+      id="ToggleCommentVisibilityWidget"/>
   </extensions>
 </idea-plugin>

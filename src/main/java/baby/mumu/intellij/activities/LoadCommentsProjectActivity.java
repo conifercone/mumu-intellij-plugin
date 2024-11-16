@@ -15,12 +15,17 @@
  */
 package baby.mumu.intellij.activities;
 
-import baby.mumu.intellij.listeners.CommentFileUpdateListener;
-import baby.mumu.intellij.services.CommentService;
-import com.intellij.openapi.Disposable;
+import baby.mumu.intellij.kotlin.services.CommentDbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.startup.ProjectActivity;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.newvfs.BulkFileListener;
+import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
+import java.util.List;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import org.jetbrains.annotations.NotNull;
@@ -32,26 +37,52 @@ import org.jetbrains.annotations.Nullable;
  * @author <a href="mailto:kaiyu.shan@outlook.com">kaiyu.shan</a>
  * @since 1.0.0
  */
-public class LoadCommentsProjectActivity implements ProjectActivity, Disposable {
-
-  private final CommentFileUpdateListener commentFileUpdateListener = new CommentFileUpdateListener();
-  private Project project;
+public class LoadCommentsProjectActivity implements ProjectActivity {
 
   @Override
   public @Nullable Object execute(@NotNull Project project,
     @NotNull Continuation<? super Unit> continuation) {
-    this.project = project;
-    // 在项目启动时自动加载注释
-    CommentService commentService = project.getService(CommentService.class);
-    commentService.loadCommentsFromFile(project);  // 自动加载注释数据
-    ProjectManager.getInstance().addProjectManagerListener(project, commentFileUpdateListener);
-    return null;
-  }
+    CommentDbService.INSTANCE.connectDatabase(project);
+    project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES,
+      new BulkFileListener() {
+        @Override
+        public void after(@NotNull List<? extends VFileEvent> events) {
+          if (CommentDbService.INSTANCE.getConnected()) {
+            List<VFileDeleteEvent> fileDeleteEvents = events.stream()
+              .filter(event -> event instanceof VFileDeleteEvent)
+              .map(event -> (VFileDeleteEvent) event)
+              .toList();
+            List<VFilePropertyChangeEvent> filePropertyChangeEvents = events.stream()
+              .filter(event -> event instanceof VFilePropertyChangeEvent)
+              .map(event -> (VFilePropertyChangeEvent) event)
+              .toList();
+            List<VFileMoveEvent> fileMoveEvents = events.stream()
+              .filter(event -> event instanceof VFileMoveEvent)
+              .map(event -> (VFileMoveEvent) event)
+              .toList();
+            fileDeleteEvents.forEach(event -> {
+              VirtualFile file = event.getFile();
+              CommentDbService.INSTANCE.removeByRelativePath(project, file);
+            });
+            filePropertyChangeEvents.forEach(
+              event -> processPathChange(project, event.getOldPath(), event.getNewPath()));
+            fileMoveEvents.forEach(
+              event -> processPathChange(project, event.getOldPath(), event.getNewPath()));
+          }
+        }
 
-  @Override
-  public void dispose() {
-    if (project != null) {
-      ProjectManager.getInstance().removeProjectManagerListener(project, commentFileUpdateListener);
-    }
+        private void processPathChange(@NotNull Project project, String oldPath, String newPath) {
+          String oldRelativePath = CommentDbService.INSTANCE.getRelativePath(project,
+            oldPath);
+          String newRelativePath = CommentDbService.INSTANCE.getRelativePath(project,
+            newPath);
+          // 如果路径发生变化，更新数据库中的数据
+          if (!oldRelativePath.equals(newRelativePath)) {
+            CommentDbService.INSTANCE.updateRelativePathByRelativePath(oldRelativePath,
+              newRelativePath);
+          }
+        }
+      });
+    return null;
   }
 }

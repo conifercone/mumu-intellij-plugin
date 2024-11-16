@@ -13,24 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package baby.mumu.intellij.listeners;
+package baby.mumu.intellij.widgets;
 
-import baby.mumu.intellij.services.CommentService;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManagerListener;
+import com.intellij.openapi.util.NlsContexts.ConfigurableName;
+import com.intellij.openapi.wm.StatusBarWidget;
+import com.intellij.openapi.wm.impl.status.widget.StatusBarEditorBasedWidgetFactory;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 注释文件更新监听
+ * 注释功能开始状态小组件
  *
  * @author <a href="mailto:kaiyu.shan@outlook.com">kaiyu.shan</a>
- * @since 1.0.0
+ * @since 1.1.0
  */
-public class CommentFileUpdateListener implements ProjectManagerListener {
+public class ToggleCommentVisibilityWidgetFactory extends StatusBarEditorBasedWidgetFactory {
+
 
   @Override
-  public void projectClosed(@NotNull Project project) {
-    CommentService commentService = project.getService(CommentService.class);
-    commentService.saveCommentsToFile(project);
+  public @NotNull @NonNls String getId() {
+    return "ToggleCommentVisibilityWidget";
+  }
+
+  @Override
+  public @NotNull @ConfigurableName String getDisplayName() {
+    return "Toggle Comment";
+  }
+
+  @Override
+  public @NotNull StatusBarWidget createWidget(@NotNull Project project) {
+    return new ToggleCommentVisibilityWidget(project);
   }
 }

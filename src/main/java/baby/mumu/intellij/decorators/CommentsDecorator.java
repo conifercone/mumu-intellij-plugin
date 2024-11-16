@@ -15,7 +15,9 @@
  */
 package baby.mumu.intellij.decorators;
 
-import baby.mumu.intellij.services.CommentService;
+import baby.mumu.intellij.kotlin.dos.MuMuComment;
+import baby.mumu.intellij.kotlin.services.CommentDbService;
+import baby.mumu.intellij.services.CommentConfigService;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.ProjectViewNodeDecorator;
@@ -40,13 +42,14 @@ public class CommentsDecorator implements ProjectViewNodeDecorator {
     }
     VirtualFile file = node.getVirtualFile();
     if (file != null) {
-      CommentService commentService = project.getService(CommentService.class);
+      CommentConfigService commentConfigService = project.getService(CommentConfigService.class);
 
       // 仅在注释可见时添加注释内容
-      if (commentService.isCommentsVisible()) {
-        String comment = commentService.getCommentForFile(project, file);
-        if (StringUtils.isNotBlank(comment)) {
-          data.setLocationString("// " + comment);
+      if (commentConfigService.isCommentsVisible()
+        && CommentDbService.INSTANCE.getConnected()) {
+        MuMuComment comment = CommentDbService.INSTANCE.getByRelativePath(project, file);
+        if (comment != null && StringUtils.isNotBlank(comment.getComment())) {
+          data.setLocationString("// " + comment.getComment());
         }
       }
     }
