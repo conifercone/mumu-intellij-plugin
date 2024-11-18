@@ -6,7 +6,7 @@ jetbrainsAnnotationsVersion = '26.0.1'
 sqliteJdbcVersion = '3.47.0.0'
 exposedVersion = '0.56.0'
 flywayVersion = "10.21.0"
-hikariCPVersion = "6.2.0"
+hikariCPVersion = "6.2.1"
 # bom version
 guavaBomVersion = '33.3.1-jre'
 # plugin version
