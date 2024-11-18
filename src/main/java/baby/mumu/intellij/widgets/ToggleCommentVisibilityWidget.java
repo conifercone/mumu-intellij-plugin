@@ -17,6 +17,7 @@ package baby.mumu.intellij.widgets;
 
 import static baby.mumu.intellij.constants.WidgetIds.TOGGLE_COMMENT_VISIBILITY_WIDGET_ID;
 
+import baby.mumu.intellij.kotlin.tools.TranslationBundleTool;
 import baby.mumu.intellij.services.CommentConfigService;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.project.Project;
@@ -62,7 +63,8 @@ public class ToggleCommentVisibilityWidget extends EditorBasedWidget {
       @Override
       public @NotNull String getTooltipText() {
         return project.getService(CommentConfigService.class).isCommentsVisible()
-          ? "Comment is Active" : "Comment is Inactive";
+          ? TranslationBundleTool.INSTANCE.getAdaptedMessage("comment.is.active")
+          : TranslationBundleTool.INSTANCE.getAdaptedMessage("comment.is.inactive");
       }
 
       @Override
