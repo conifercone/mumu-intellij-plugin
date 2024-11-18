@@ -15,6 +15,8 @@
  */
 package baby.mumu.intellij.widgets;
 
+import static baby.mumu.intellij.constants.WidgetIds.TOGGLE_COMMENT_VISIBILITY_WIDGET_ID;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts.ConfigurableName;
 import com.intellij.openapi.wm.StatusBarWidget;
@@ -33,7 +35,7 @@ public class ToggleCommentVisibilityWidgetFactory extends StatusBarEditorBasedWi
 
   @Override
   public @NotNull @NonNls String getId() {
-    return "ToggleCommentVisibilityWidget";
+    return TOGGLE_COMMENT_VISIBILITY_WIDGET_ID;
   }
 
   @Override

@@ -15,6 +15,8 @@
  */
 package baby.mumu.intellij.widgets;
 
+import static baby.mumu.intellij.constants.WidgetIds.TOGGLE_COMMENT_VISIBILITY_WIDGET_ID;
+
 import baby.mumu.intellij.services.CommentConfigService;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.project.Project;
@@ -44,7 +46,7 @@ public class ToggleCommentVisibilityWidget extends EditorBasedWidget {
 
   @Override
   public @NotNull String ID() {
-    return "ToggleCommentVisibilityWidget";
+    return TOGGLE_COMMENT_VISIBILITY_WIDGET_ID;
   }
 
   @Override
