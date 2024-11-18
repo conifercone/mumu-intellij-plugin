@@ -76,7 +76,7 @@ public class AddCommentAction extends AnAction {
     String comment = Messages.showInputDialog(
       TranslationBundleTool.INSTANCE.getAdaptedMessage("please.enter.comment"),
       TranslationBundleTool.INSTANCE.getAdaptedMessage("add.comment.title"),
-      Messages.getQuestionIcon());
+      Messages.getQuestionIcon(), null, new CommentInputValidator());
     if (StringUtils.isNotBlank(comment)) {
       project.getService(CommentDbService.class).insertComment(project, selectedFile, comment);
       selectedFile.refresh(false, true);

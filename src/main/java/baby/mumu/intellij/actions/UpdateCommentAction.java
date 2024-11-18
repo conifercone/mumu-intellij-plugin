@@ -89,7 +89,7 @@ public class UpdateCommentAction extends AnAction {
     String comment = Messages.showInputDialog(project,
       TranslationBundleTool.INSTANCE.getAdaptedMessage("please.enter.comment"),
       TranslationBundleTool.INSTANCE.getAdaptedMessage("update.comment.title"),
-      Messages.getQuestionIcon(), existingComment.getComment(), null);
+      Messages.getQuestionIcon(), existingComment.getComment(), new CommentInputValidator());
     if (StringUtils.isNotBlank(comment)) {
       project.getService(CommentDbService.class).updateComment(project, selectedFile, comment);
       selectedFile.refresh(false, true);
