@@ -42,8 +42,10 @@ public class RemoveCommentAction extends AnAction {
     Project project = e.getProject();
     VirtualFile selectedFile = e.getData(PlatformCoreDataKeys.VIRTUAL_FILE);
     e.getPresentation().setEnabled(
-      project != null && selectedFile != null && CommentDbService.INSTANCE.getConnected()
-        && CommentDbService.INSTANCE.getByRelativePath(project, selectedFile) != null);
+      project != null && selectedFile != null && project.getService(CommentDbService.class)
+        .getConnected()
+        && project.getService(CommentDbService.class).getByRelativePath(project, selectedFile)
+        != null);
   }
 
   @Override
@@ -64,8 +66,9 @@ public class RemoveCommentAction extends AnAction {
     }
 
     // 检查是否存在注释
-    MuMuComment existingComment = CommentDbService.INSTANCE.getByRelativePath(project,
-      selectedFile);
+    MuMuComment existingComment = project.getService(CommentDbService.class)
+      .getByRelativePath(project,
+        selectedFile);
     if (existingComment == null) {
       Messages.showMessageDialog("This file has no comment", "Hint", Messages.getInformationIcon());
       return;
@@ -79,7 +82,7 @@ public class RemoveCommentAction extends AnAction {
 
     // 如果用户选择了 "是"
     if (result == Messages.YES) {
-      CommentDbService.INSTANCE.removeById(existingComment.getId());
+      project.getService(CommentDbService.class).removeById(existingComment.getId());
       selectedFile.refresh(false, true); // 刷新文件
       ProjectView.getInstance(project).refresh();
     }

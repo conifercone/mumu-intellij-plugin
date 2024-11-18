@@ -17,6 +17,7 @@ package baby.mumu.intellij.kotlin.services
 
 import baby.mumu.intellij.kotlin.dos.MuMuComment
 import baby.mumu.intellij.kotlin.dos.MuMuComments
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import org.apache.commons.lang3.StringUtils
@@ -35,9 +36,16 @@ private const val PRAGMA_USER_VERSION_ = "PRAGMA user_version;"
  * @author <a href="mailto:kaiyu.shan@outlook.com">kaiyu.shan</a>
  * @since 1.1.0
  */
-object CommentDbService {
+@Service(Service.Level.PROJECT)
+class CommentDbService {
 
-    var connected = false
+    private var connected = false
+
+    private var database: Database? = null
+
+    fun getConnected(): Boolean {
+        return connected
+    }
 
     fun connectDatabase(project: Project) {
         // 将路径转换为字符串并连接到数据库
@@ -45,10 +53,10 @@ object CommentDbService {
             File(project.basePath, ".idea"),
             "mumu_comments.db"
         ).path.replace("\\", "/")
-        Database.connect(
+        database = Database.connect(
             url, "org.sqlite.JDBC"
         )
-        transaction {
+        transaction(database) {
             // 执行一个简单的查询，如检查表是否存在（即使表可能不存在，也不会报错）
             exec(PRAGMA_USER_VERSION_) // 查询数据库版本号
         }
@@ -75,7 +83,7 @@ object CommentDbService {
      * 新增注释
      */
     fun insertComment(project: Project, virtualFile: VirtualFile, comment: String) {
-        transaction {
+        transaction(database) {
             MuMuComments.insert {
                 it[relativePath] = getRelativePath(project, virtualFile)
                 it[MuMuComments.comment] = comment
@@ -87,7 +95,7 @@ object CommentDbService {
      * 根据 relativePath 获取 MuMuComments 对象
      */
     fun getByRelativePath(project: Project, virtualFile: VirtualFile): MuMuComment? {
-        return transaction {
+        return transaction(database) {
             MuMuComments
                 .selectAll()
                 .where(MuMuComments.relativePath.eq(getRelativePath(project, virtualFile)))
@@ -102,19 +110,19 @@ object CommentDbService {
     }
 
     fun removeById(id: Int) {
-        transaction {
+        transaction(database) {
             MuMuComments.deleteWhere { MuMuComments.id eq id }
         }
     }
 
     fun removeByRelativePath(project: Project, virtualFile: VirtualFile) {
-        transaction {
+        transaction(database) {
             MuMuComments.deleteWhere { relativePath eq getRelativePath(project, virtualFile) }
         }
     }
 
     fun updateRelativePathByRelativePath(oldPath: String, newPath: String) {
-        transaction {
+        transaction(database) {
             // 更新与 oldPath 关联的注释记录的 relativePath
             MuMuComments
                 .update({ MuMuComments.relativePath eq oldPath }) {
@@ -127,7 +135,7 @@ object CommentDbService {
      * 更新注释
      */
     fun updateComment(project: Project, virtualFile: VirtualFile, comment: String) {
-        transaction {
+        transaction(database) {
             MuMuComments.update(where = {
                 MuMuComments.relativePath eq getRelativePath(
                     project,
