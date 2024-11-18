@@ -9,7 +9,7 @@
 
   <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
   <vendor email="kaiyu.shan@outlook.com" url="https://github.com/conifercone">kaiyu.shan</vendor>
-
+  <resource-bundle>messages.MuMuBundle</resource-bundle>
   <!-- Product and plugin compatibility requirements.
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
   <depends>com.intellij.modules.platform</depends>
@@ -19,26 +19,18 @@
       popup="true" description="This is a mumu actions group">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
       <action id="AddCommentAction"
-        class="baby.mumu.intellij.actions.AddCommentAction"
-        text="Add Comment"
-        description="Add comment to selected files or folders">
+        class="baby.mumu.intellij.actions.AddCommentAction">
       </action>
       <action id="UpdateCommentAction"
-        class="baby.mumu.intellij.actions.UpdateCommentAction"
-        text="Update Comment"
-        description="Update comment to selected files or folders">
+        class="baby.mumu.intellij.actions.UpdateCommentAction">
       </action>
       <action id="RemoveCommentAction"
-        class="baby.mumu.intellij.actions.RemoveCommentAction"
-        text="Delete Comment"
-        description="Delete comment from selected files or folders">
+        class="baby.mumu.intellij.actions.RemoveCommentAction">
       </action>
     </group>
 
     <action id="ToggleCommentVisibilityAction"
-      class="baby.mumu.intellij.actions.ToggleCommentVisibilityAction"
-      text="Switch Comments Display"
-      description="Toggle display of file and folder comments">
+      class="baby.mumu.intellij.actions.ToggleCommentVisibilityAction">
       <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt shift Q"/>
     </action>
   </actions>

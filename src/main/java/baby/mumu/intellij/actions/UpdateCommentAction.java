@@ -17,6 +17,7 @@ package baby.mumu.intellij.actions;
 
 import baby.mumu.intellij.kotlin.dos.MuMuComment;
 import baby.mumu.intellij.kotlin.services.CommentDbService;
+import baby.mumu.intellij.kotlin.tools.TranslationBundleTool;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -46,6 +47,10 @@ public class UpdateCommentAction extends AnAction {
         .getConnected()
         && project.getService(CommentDbService.class).getByRelativePath(project, selectedFile)
         != null);
+    e.getPresentation()
+      .setText(TranslationBundleTool.INSTANCE.getAdaptedMessage("update.comment.action.text"));
+    e.getPresentation().setDescription(
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("update.comment.action.description"));
   }
 
   @Override
@@ -62,7 +67,10 @@ public class UpdateCommentAction extends AnAction {
     }
     VirtualFile selectedFile = e.getData(PlatformCoreDataKeys.VIRTUAL_FILE);
     if (selectedFile == null) {
-      Messages.showMessageDialog("No file or folder selected", "Error", Messages.getErrorIcon());
+      Messages.showMessageDialog(
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("no.file.or.folder.selected"),
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("error"),
+        Messages.getErrorIcon());
       return;
     }
 
@@ -71,12 +79,17 @@ public class UpdateCommentAction extends AnAction {
       .getByRelativePath(project,
         selectedFile);
     if (existingComment == null) {
-      Messages.showMessageDialog("This file has no comment", "Hint", Messages.getInformationIcon());
+      Messages.showMessageDialog(
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("this.file.has.no.comment"),
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("hint"),
+        Messages.getInformationIcon());
       return;
     }
     // 显示对话框获取注释内容
-    String comment = Messages.showInputDialog(project, "Please enter comment:", "Update Comment",
-      Messages.getQuestionIcon(), existingComment.getComment(), null);
+    String comment = Messages.showInputDialog(project,
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("please.enter.comment"),
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("update.comment.title"),
+      Messages.getQuestionIcon(), existingComment.getComment(), new CommentInputValidator());
     if (StringUtils.isNotBlank(comment)) {
       project.getService(CommentDbService.class).updateComment(project, selectedFile, comment);
       selectedFile.refresh(false, true);

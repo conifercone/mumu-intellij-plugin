@@ -15,8 +15,11 @@
  */
 package baby.mumu.intellij.actions;
 
+import baby.mumu.intellij.constants.WidgetIds;
+import baby.mumu.intellij.kotlin.tools.TranslationBundleTool;
 import baby.mumu.intellij.services.CommentConfigService;
 import com.intellij.ide.projectView.ProjectView;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -34,6 +37,19 @@ import org.jetbrains.annotations.NotNull;
 public class ToggleCommentVisibilityAction extends AnAction {
 
   @Override
+  public void update(@NotNull AnActionEvent e) {
+    e.getPresentation().setText(
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("toggle.comment.visibility.action.text"));
+    e.getPresentation().setDescription(TranslationBundleTool.INSTANCE.getAdaptedMessage(
+      "toggle.comment.visibility.action.description"));
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
+  }
+
+  @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     Project project = e.getProject();
     if (project == null) {
@@ -48,12 +64,15 @@ public class ToggleCommentVisibilityAction extends AnAction {
     // 刷新 Project View 以更新显示
     VirtualFile projectFile = project.getProjectFile();
     if (projectFile == null) {
-      Messages.showMessageDialog("Project file cannot be obtained", "Error",
+      Messages.showMessageDialog(
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("project.file.cannot.be.obtained"),
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("error"),
         Messages.getErrorIcon());
       return;
     }
     project.getProjectFile().refresh(false, true);
     ProjectView.getInstance(e.getProject()).refresh();
-    WindowManager.getInstance().getStatusBar(project).updateWidget("ToggleCommentVisibilityWidget");
+    WindowManager.getInstance().getStatusBar(project)
+      .updateWidget(WidgetIds.TOGGLE_COMMENT_VISIBILITY_WIDGET_ID);
   }
 }

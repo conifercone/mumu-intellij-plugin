@@ -16,6 +16,7 @@
 package baby.mumu.intellij.actions;
 
 import baby.mumu.intellij.kotlin.services.CommentDbService;
+import baby.mumu.intellij.kotlin.tools.TranslationBundleTool;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -44,6 +45,10 @@ public class AddCommentAction extends AnAction {
         .getConnected()
         && project.getService(CommentDbService.class).getByRelativePath(project, selectedFile)
         == null);
+    e.getPresentation()
+      .setText(TranslationBundleTool.INSTANCE.getAdaptedMessage("add.comment.action.text"));
+    e.getPresentation().setDescription(
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("add.comment.action.description"));
   }
 
   @Override
@@ -60,13 +65,18 @@ public class AddCommentAction extends AnAction {
     }
     VirtualFile selectedFile = e.getData(PlatformCoreDataKeys.VIRTUAL_FILE);
     if (selectedFile == null) {
-      Messages.showMessageDialog("No file or folder selected", "Error", Messages.getErrorIcon());
+      Messages.showMessageDialog(
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("no.file.or.folder.selected"),
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("error"),
+        Messages.getErrorIcon());
       return;
     }
 
     // 显示对话框获取注释内容
-    String comment = Messages.showInputDialog("Please enter comment:", "Add Comment",
-      Messages.getQuestionIcon());
+    String comment = Messages.showInputDialog(
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("please.enter.comment"),
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("add.comment.title"),
+      Messages.getQuestionIcon(), null, new CommentInputValidator());
     if (StringUtils.isNotBlank(comment)) {
       project.getService(CommentDbService.class).insertComment(project, selectedFile, comment);
       selectedFile.refresh(false, true);

@@ -17,9 +17,12 @@ package baby.mumu.intellij.kotlin.services
 
 import baby.mumu.intellij.kotlin.dos.MuMuComment
 import baby.mumu.intellij.kotlin.dos.MuMuComments
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import org.apache.commons.lang3.StringUtils
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.*
@@ -37,11 +40,12 @@ private const val PRAGMA_USER_VERSION_ = "PRAGMA user_version;"
  * @since 1.1.0
  */
 @Service(Service.Level.PROJECT)
-class CommentDbService {
+class CommentDbService : Disposable {
 
     private var connected = false
 
     private var database: Database? = null
+    private var dataSource: HikariDataSource? = null
 
     fun getConnected(): Boolean {
         return connected
@@ -53,9 +57,15 @@ class CommentDbService {
             File(project.basePath, ".idea"),
             "mumu_comments.db"
         ).path.replace("\\", "/")
-        database = Database.connect(
-            url, "org.sqlite.JDBC"
-        )
+        val config = HikariConfig().apply {
+            jdbcUrl = url
+            driverClassName = "org.sqlite.JDBC"
+            maximumPoolSize = 6
+            isReadOnly = false
+            transactionIsolation = "TRANSACTION_SERIALIZABLE"
+        }
+        dataSource = HikariDataSource(config)
+        database = Database.connect(dataSource!!)
         transaction(database) {
             // 执行一个简单的查询，如检查表是否存在（即使表可能不存在，也不会报错）
             exec(PRAGMA_USER_VERSION_) // 查询数据库版本号
@@ -67,9 +77,7 @@ class CommentDbService {
             currentThread.contextClassLoader = pluginClassLoader
             // 设置 Flyway 配置
             val flyway = Flyway.configure()
-                .dataSource(
-                    url, null, null
-                )
+                .dataSource(dataSource)
                 .load()
             // 执行迁移
             flyway.migrate()
@@ -173,5 +181,10 @@ class CommentDbService {
         } else {
             path.replace(project.basePath!!, ".")
         }
+    }
+
+    override fun dispose() {
+        // 释放资源
+        dataSource?.close()
     }
 }

@@ -17,6 +17,7 @@ package baby.mumu.intellij.actions;
 
 import baby.mumu.intellij.kotlin.dos.MuMuComment;
 import baby.mumu.intellij.kotlin.services.CommentDbService;
+import baby.mumu.intellij.kotlin.tools.TranslationBundleTool;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -46,6 +47,10 @@ public class RemoveCommentAction extends AnAction {
         .getConnected()
         && project.getService(CommentDbService.class).getByRelativePath(project, selectedFile)
         != null);
+    e.getPresentation()
+      .setText(TranslationBundleTool.INSTANCE.getAdaptedMessage("delete.comment.action.text"));
+    e.getPresentation().setDescription(
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("delete.comment.action.description"));
   }
 
   @Override
@@ -70,13 +75,16 @@ public class RemoveCommentAction extends AnAction {
       .getByRelativePath(project,
         selectedFile);
     if (existingComment == null) {
-      Messages.showMessageDialog("This file has no comment", "Hint", Messages.getInformationIcon());
+      Messages.showMessageDialog(
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("this.file.has.no.comment"),
+        TranslationBundleTool.INSTANCE.getAdaptedMessage("hint"),
+        Messages.getInformationIcon());
       return;
     }
 
     int result = Messages.showYesNoDialog(
-      "Are you sure you want to delete the comment for this file?", // 提示消息
-      "Delete Comment", // 标题
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("delete.comment.dialog"), // 提示消息
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("delete.comment.title"), // 标题
       Messages.getQuestionIcon() // 图标
     );
 
