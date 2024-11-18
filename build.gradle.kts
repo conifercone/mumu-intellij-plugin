@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.flyway.core)
     implementation(libs.commons.lang3)
     implementation(libs.jetbrains.annotations)
+    implementation(libs.hikariCP)
     annotationProcessor(libs.mapstruct.processor)
 }
 

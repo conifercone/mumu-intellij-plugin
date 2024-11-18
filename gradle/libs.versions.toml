@@ -6,6 +6,7 @@ jetbrainsAnnotationsVersion = '26.0.1'
 sqliteJdbcVersion = '3.47.0.0'
 exposedVersion = '0.56.0'
 flywayVersion = "10.21.0"
+hikariCPVersion = "6.2.0"
 # bom version
 guavaBomVersion = '33.3.1-jre'
 # plugin version
@@ -36,6 +37,8 @@ exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exp
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposedVersion" }
 # https://mvnrepository.com/artifact/org.flywaydb/flyway-core
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flywayVersion" }
+# https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+hikariCP = { module = "com.zaxxer:HikariCP", version.ref = "hikariCPVersion" }
 
 [bundles]
 exposed = ["exposed-jdbc", "exposed-dao", "exposed-core"]
