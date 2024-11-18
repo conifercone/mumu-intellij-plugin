@@ -9,5 +9,5 @@
 <br/>
 <h2>Features</h2>
 <ul>
-    <li>Add comments to files and folders: In the project view, right-click the file or folder to which you want to add comments and click Add Comment.</li>
+    <li>Add comments to files and folders: In the project view, right-click the file or folder to which you want to add comments and click Add Comment, The default shortcut key to quickly show and hide comments is ctrl+alt+shift+Q.</li>
 </ul>
