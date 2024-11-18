@@ -46,8 +46,9 @@ public class CommentsDecorator implements ProjectViewNodeDecorator {
 
       // 仅在注释可见时添加注释内容
       if (commentConfigService.isCommentsVisible()
-        && CommentDbService.INSTANCE.getConnected()) {
-        MuMuComment comment = CommentDbService.INSTANCE.getByRelativePath(project, file);
+        && project.getService(CommentDbService.class).getConnected()) {
+        MuMuComment comment = project.getService(CommentDbService.class)
+          .getByRelativePath(project, file);
         if (comment != null && StringUtils.isNotBlank(comment.getComment())) {
           data.setLocationString("// " + comment.getComment());
         }

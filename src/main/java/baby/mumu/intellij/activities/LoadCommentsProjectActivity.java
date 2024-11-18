@@ -42,12 +42,12 @@ public class LoadCommentsProjectActivity implements ProjectActivity {
   @Override
   public @Nullable Object execute(@NotNull Project project,
     @NotNull Continuation<? super Unit> continuation) {
-    CommentDbService.INSTANCE.connectDatabase(project);
+    project.getService(CommentDbService.class).connectDatabase(project);
     project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES,
       new BulkFileListener() {
         @Override
         public void after(@NotNull List<? extends VFileEvent> events) {
-          if (CommentDbService.INSTANCE.getConnected()) {
+          if (project.getService(CommentDbService.class).getConnected()) {
             List<VFileDeleteEvent> fileDeleteEvents = events.stream()
               .filter(event -> event instanceof VFileDeleteEvent)
               .map(event -> (VFileDeleteEvent) event)
@@ -62,7 +62,7 @@ public class LoadCommentsProjectActivity implements ProjectActivity {
               .toList();
             fileDeleteEvents.forEach(event -> {
               VirtualFile file = event.getFile();
-              CommentDbService.INSTANCE.removeByRelativePath(project, file);
+              project.getService(CommentDbService.class).removeByRelativePath(project, file);
             });
             filePropertyChangeEvents.forEach(
               event -> processPathChange(project, event.getOldPath(), event.getNewPath()));
@@ -72,13 +72,16 @@ public class LoadCommentsProjectActivity implements ProjectActivity {
         }
 
         private void processPathChange(@NotNull Project project, String oldPath, String newPath) {
-          String oldRelativePath = CommentDbService.INSTANCE.getRelativePath(project,
+          String oldRelativePath = project.getService(CommentDbService.class)
+            .getRelativePath(project,
             oldPath);
-          String newRelativePath = CommentDbService.INSTANCE.getRelativePath(project,
+          String newRelativePath = project.getService(CommentDbService.class)
+            .getRelativePath(project,
             newPath);
           // 如果路径发生变化，更新数据库中的数据
           if (!oldRelativePath.equals(newRelativePath)) {
-            CommentDbService.INSTANCE.updateRelativePathByRelativePath(oldRelativePath,
+            project.getService(CommentDbService.class)
+              .updateRelativePathByRelativePath(oldRelativePath,
               newRelativePath);
           }
         }

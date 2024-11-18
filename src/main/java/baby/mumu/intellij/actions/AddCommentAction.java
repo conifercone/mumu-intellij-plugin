@@ -40,8 +40,10 @@ public class AddCommentAction extends AnAction {
     Project project = e.getProject();
     VirtualFile selectedFile = e.getData(PlatformCoreDataKeys.VIRTUAL_FILE);
     e.getPresentation().setEnabled(
-      project != null && selectedFile != null && CommentDbService.INSTANCE.getConnected()
-        && CommentDbService.INSTANCE.getByRelativePath(project, selectedFile) == null);
+      project != null && selectedFile != null && project.getService(CommentDbService.class)
+        .getConnected()
+        && project.getService(CommentDbService.class).getByRelativePath(project, selectedFile)
+        == null);
   }
 
   @Override
@@ -66,7 +68,7 @@ public class AddCommentAction extends AnAction {
     String comment = Messages.showInputDialog("Please enter comment:", "Add Comment",
       Messages.getQuestionIcon());
     if (StringUtils.isNotBlank(comment)) {
-      CommentDbService.INSTANCE.insertComment(project, selectedFile, comment);
+      project.getService(CommentDbService.class).insertComment(project, selectedFile, comment);
       selectedFile.refresh(false, true);
       ProjectView.getInstance(project).refresh();
     }
