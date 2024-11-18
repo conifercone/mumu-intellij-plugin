@@ -17,6 +17,7 @@ package baby.mumu.intellij.widgets;
 
 import static baby.mumu.intellij.constants.WidgetIds.TOGGLE_COMMENT_VISIBILITY_WIDGET_ID;
 
+import baby.mumu.intellij.kotlin.tools.TranslationBundleTool;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts.ConfigurableName;
 import com.intellij.openapi.wm.StatusBarWidget;
@@ -40,7 +41,8 @@ public class ToggleCommentVisibilityWidgetFactory extends StatusBarEditorBasedWi
 
   @Override
   public @NotNull @ConfigurableName String getDisplayName() {
-    return "Toggle Comment";
+    return TranslationBundleTool.INSTANCE.getAdaptedMessage(
+      "toggle.comment.visibility.widget.display.name");
   }
 
   @Override
