@@ -16,9 +16,13 @@
 package baby.mumu.intellij.widgets;
 
 import baby.mumu.intellij.services.CommentConfigService;
+import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
+import com.intellij.util.Consumer;
+import java.awt.event.MouseEvent;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,6 +61,16 @@ public class ToggleCommentVisibilityWidget extends EditorBasedWidget {
       public @NotNull String getTooltipText() {
         return project.getService(CommentConfigService.class).isCommentsVisible()
           ? "Comment is Active" : "Comment is Inactive";
+      }
+
+      @Override
+      public @NotNull Consumer<MouseEvent> getClickConsumer() {
+        return __ -> {
+          project.getService(CommentConfigService.class).setCommentsVisible(
+            !project.getService(CommentConfigService.class).isCommentsVisible());
+          WindowManager.getInstance().getStatusBar(project).updateWidget(ID());
+          ProjectView.getInstance(project).refresh();
+        };
       }
     };
   }
