@@ -17,6 +17,7 @@ package baby.mumu.intellij.kotlin.services
 
 import baby.mumu.intellij.kotlin.dos.MuMuComment
 import baby.mumu.intellij.kotlin.dos.MuMuComments
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -39,11 +40,12 @@ private const val PRAGMA_USER_VERSION_ = "PRAGMA user_version;"
  * @since 1.1.0
  */
 @Service(Service.Level.PROJECT)
-class CommentDbService {
+class CommentDbService : Disposable {
 
     private var connected = false
 
     private var database: Database? = null
+    private var dataSource: HikariDataSource? = null
 
     fun getConnected(): Boolean {
         return connected
@@ -62,8 +64,8 @@ class CommentDbService {
             isReadOnly = false
             transactionIsolation = "TRANSACTION_SERIALIZABLE"
         }
-        val dataSource = HikariDataSource(config)
-        database = Database.connect(dataSource)
+        dataSource = HikariDataSource(config)
+        database = Database.connect(dataSource!!)
         transaction(database) {
             // 执行一个简单的查询，如检查表是否存在（即使表可能不存在，也不会报错）
             exec(PRAGMA_USER_VERSION_) // 查询数据库版本号
@@ -179,5 +181,10 @@ class CommentDbService {
         } else {
             path.replace(project.basePath!!, ".")
         }
+    }
+
+    override fun dispose() {
+        // 释放资源
+        dataSource?.close()
     }
 }
