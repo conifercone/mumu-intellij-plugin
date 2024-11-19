@@ -1,6 +1,6 @@
 [versions]
 # dependence version
-mapstructVersion = '1.6.2'
+mapstructVersion = '1.6.3'
 commonsLang3Version = '3.17.0'
 jetbrainsAnnotationsVersion = '26.0.1'
 sqliteJdbcVersion = '3.47.0.0'
