@@ -14,7 +14,6 @@ plugins {
 
 fun properties(key: String) = providers.gradleProperty(key)
 
-@Suppress("UnstableApiUsage")
 val gitHash = providers.exec {
     commandLine("git", "rev-parse", "--short", "HEAD")
 }.standardOutput.asText.get().trim()
@@ -24,6 +23,7 @@ val versionString = findProperty("version")!! as String
 version = if (versionString.contains("-")) "$versionString-$gitHash" else versionString
 
 repositories {
+    maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
     intellijPlatform {
         defaultRepositories()
