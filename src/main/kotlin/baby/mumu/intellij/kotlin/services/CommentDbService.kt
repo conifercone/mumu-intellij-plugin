@@ -123,6 +123,12 @@ class CommentDbService : Disposable {
         }
     }
 
+    fun removeAll() {
+        transaction(database) {
+            MuMuComments.deleteAll()
+        }
+    }
+
     fun removeByRelativePath(project: Project, virtualFile: VirtualFile) {
         transaction(database) {
             MuMuComments.deleteWhere { relativePath eq getRelativePath(project, virtualFile) }

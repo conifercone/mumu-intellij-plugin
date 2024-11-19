@@ -27,6 +27,9 @@
       <action id="RemoveCommentAction"
         class="baby.mumu.intellij.actions.RemoveCommentAction">
       </action>
+      <action id="RemoveAllCommentAction"
+        class="baby.mumu.intellij.actions.RemoveAllCommentAction">
+      </action>
     </group>
 
     <action id="ToggleCommentVisibilityAction"
