@@ -12,7 +12,7 @@ guavaBomVersion = '33.3.1-jre'
 # plugin version
 kotlinPluginVersion = '2.0.21'
 intellijPluginVersion = '2.1.0'
-changelogPluginVersion = '2.2.0'
+changelogPluginVersion = '2.2.1'
 
 [libraries]
 # https://mvnrepository.com/artifact/org.mapstruct/mapstruct
