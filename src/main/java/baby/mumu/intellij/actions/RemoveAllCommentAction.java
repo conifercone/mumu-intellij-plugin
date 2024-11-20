@@ -17,6 +17,7 @@ package baby.mumu.intellij.actions;
 
 import baby.mumu.intellij.kotlin.services.CommentDbService;
 import baby.mumu.intellij.kotlin.tools.TranslationBundleTool;
+import baby.mumu.intellij.toolwindows.CommentToolWindowRefreshNotifier;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -67,6 +68,7 @@ public class RemoveAllCommentAction extends AnAction {
     if (result == Messages.YES) {
       project.getService(CommentDbService.class).removeAll();
       ProjectView.getInstance(project).refresh();
+      project.getMessageBus().syncPublisher(CommentToolWindowRefreshNotifier.TOPIC).refresh();
     }
   }
 }

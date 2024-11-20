@@ -18,6 +18,7 @@ package baby.mumu.intellij.actions;
 import baby.mumu.intellij.kotlin.dos.MuMuComment;
 import baby.mumu.intellij.kotlin.services.CommentDbService;
 import baby.mumu.intellij.kotlin.tools.TranslationBundleTool;
+import baby.mumu.intellij.toolwindows.CommentToolWindowRefreshNotifier;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -93,6 +94,7 @@ public class RemoveCommentAction extends AnAction {
       project.getService(CommentDbService.class).removeById(existingComment.getId());
       selectedFile.refresh(false, true); // 刷新文件
       ProjectView.getInstance(project).refresh();
+      project.getMessageBus().syncPublisher(CommentToolWindowRefreshNotifier.TOPIC).refresh();
     }
   }
 }

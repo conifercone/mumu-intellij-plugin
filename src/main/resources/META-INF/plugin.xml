@@ -48,5 +48,8 @@
     <statusBarWidgetFactory
       implementation="baby.mumu.intellij.widgets.ToggleCommentVisibilityWidgetFactory"
       id="ToggleCommentVisibilityWidget"/>
+    <toolWindow factoryClass="baby.mumu.intellij.toolwindows.CommentToolWindow"
+      anchor="right"
+      id="All Comment"/>
   </extensions>
 </idea-plugin>
