@@ -18,6 +18,7 @@ package baby.mumu.intellij.actions;
 import baby.mumu.intellij.kotlin.dos.MuMuComment;
 import baby.mumu.intellij.kotlin.services.CommentDbService;
 import baby.mumu.intellij.kotlin.tools.TranslationBundleTool;
+import baby.mumu.intellij.toolwindows.CommentToolWindowRefreshNotifier;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -94,6 +95,7 @@ public class UpdateCommentAction extends AnAction {
       project.getService(CommentDbService.class).updateComment(project, selectedFile, comment);
       selectedFile.refresh(false, true);
       ProjectView.getInstance(project).refresh();
+      project.getMessageBus().syncPublisher(CommentToolWindowRefreshNotifier.TOPIC).refresh();
     }
   }
 }

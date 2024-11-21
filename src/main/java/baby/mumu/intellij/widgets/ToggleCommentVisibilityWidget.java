@@ -56,8 +56,8 @@ public class ToggleCommentVisibilityWidget extends EditorBasedWidget {
       @Override
       public @Nullable Icon getIcon() {
         return project.getService(CommentConfigService.class).isCommentsVisible()
-          ? IconLoader.findIcon("/icons/turn-off.svg", ToggleCommentVisibilityWidget.class)
-          : IconLoader.findIcon("/icons/turn-on.svg", ToggleCommentVisibilityWidget.class);
+          ? IconLoader.findIcon("/icons/turnOff.svg", ToggleCommentVisibilityWidget.class)
+          : IconLoader.findIcon("/icons/turnOn.svg", ToggleCommentVisibilityWidget.class);
       }
 
       @Override

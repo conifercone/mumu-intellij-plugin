@@ -17,6 +17,7 @@ package baby.mumu.intellij.kotlin.services
 
 import baby.mumu.intellij.kotlin.dos.MuMuComment
 import baby.mumu.intellij.kotlin.dos.MuMuComments
+import baby.mumu.intellij.toolwindows.CommentToolWindowRefreshNotifier
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
@@ -82,6 +83,7 @@ class CommentDbService : Disposable {
             // 执行迁移
             flyway.migrate()
             connected = true
+            project.messageBus.syncPublisher(CommentToolWindowRefreshNotifier.TOPIC).refresh()
         } finally {
             currentThread.contextClassLoader = originalClassLoader
         }
@@ -122,6 +124,42 @@ class CommentDbService : Disposable {
             MuMuComments.deleteWhere { MuMuComments.id eq id }
         }
     }
+
+    fun removeAll() {
+        transaction(database) {
+            MuMuComments.deleteAll()
+        }
+    }
+
+    fun findAll(commentOrPath: String?): List<MuMuComment> {
+        return transaction(database) {
+            if (commentOrPath.isNullOrEmpty()) {
+                // 如果 comment 为 null 或空字符串，则查询所有记录
+                MuMuComments
+                    .selectAll()
+                    .map { row ->
+                        MuMuComment(
+                            id = row[MuMuComments.id],
+                            relativePath = row[MuMuComments.relativePath],
+                            comment = row[MuMuComments.comment]
+                        )
+                    }
+            } else {
+                // 如果 comment 不为 null，则进行模糊查询
+                MuMuComments
+                    .selectAll()
+                    .where { MuMuComments.comment like "%$commentOrPath%" or (MuMuComments.relativePath like "%$commentOrPath%") }
+                    .map { row ->
+                        MuMuComment(
+                            id = row[MuMuComments.id],
+                            relativePath = row[MuMuComments.relativePath],
+                            comment = row[MuMuComments.comment]
+                        )
+                    }
+            }
+        }
+    }
+
 
     fun removeByRelativePath(project: Project, virtualFile: VirtualFile) {
         transaction(database) {

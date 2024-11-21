@@ -22,34 +22,28 @@ import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.VirtualFile;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 添加注释动作
+ * 删除所有注释动作
  *
  * @author <a href="mailto:kaiyu.shan@outlook.com">kaiyu.shan</a>
- * @since 1.0.0
+ * @since 1.3.0
  */
-public class AddCommentAction extends AnAction {
+public class RemoveAllCommentAction extends AnAction {
 
   @Override
   public void update(@NotNull AnActionEvent e) {
     Project project = e.getProject();
-    VirtualFile selectedFile = e.getData(PlatformCoreDataKeys.VIRTUAL_FILE);
     e.getPresentation().setEnabled(
-      project != null && selectedFile != null && project.getService(CommentDbService.class)
-        .getConnected()
-        && project.getService(CommentDbService.class).getByRelativePath(project, selectedFile)
-        == null);
+      project != null && project.getService(CommentDbService.class)
+        .getConnected());
     e.getPresentation()
-      .setText(TranslationBundleTool.INSTANCE.getAdaptedMessage("add.comment.action.text"));
+      .setText(TranslationBundleTool.INSTANCE.getAdaptedMessage("delete.all.comment.action.text"));
     e.getPresentation().setDescription(
-      TranslationBundleTool.INSTANCE.getAdaptedMessage("add.comment.action.description"));
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("delete.all.comment.action.description"));
   }
 
   @Override
@@ -59,28 +53,20 @@ public class AddCommentAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    //noinspection DuplicatedCode
     Project project = e.getProject();
     if (project == null) {
       return;
     }
-    VirtualFile selectedFile = e.getData(PlatformCoreDataKeys.VIRTUAL_FILE);
-    if (selectedFile == null) {
-      Messages.showMessageDialog(
-        TranslationBundleTool.INSTANCE.getAdaptedMessage("no.file.or.folder.selected"),
-        TranslationBundleTool.INSTANCE.getAdaptedMessage("error"),
-        Messages.getErrorIcon());
-      return;
-    }
 
-    // 显示对话框获取注释内容
-    String comment = Messages.showInputDialog(
-      TranslationBundleTool.INSTANCE.getAdaptedMessage("please.enter.comment"),
-      TranslationBundleTool.INSTANCE.getAdaptedMessage("add.comment.title"),
-      Messages.getQuestionIcon(), null, new CommentInputValidator());
-    if (StringUtils.isNotBlank(comment)) {
-      project.getService(CommentDbService.class).insertComment(project, selectedFile, comment);
-      selectedFile.refresh(false, true);
+    int result = Messages.showYesNoDialog(
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("delete.all.comment.dialog"), // 提示消息
+      TranslationBundleTool.INSTANCE.getAdaptedMessage("delete.all.comment.title"), // 标题
+      Messages.getQuestionIcon() // 图标
+    );
+
+    // 如果用户选择了 "是"
+    if (result == Messages.YES) {
+      project.getService(CommentDbService.class).removeAll();
       ProjectView.getInstance(project).refresh();
       project.getMessageBus().syncPublisher(CommentToolWindowRefreshNotifier.TOPIC).refresh();
     }

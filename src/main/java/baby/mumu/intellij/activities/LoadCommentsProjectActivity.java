@@ -16,6 +16,7 @@
 package baby.mumu.intellij.activities;
 
 import baby.mumu.intellij.kotlin.services.CommentDbService;
+import baby.mumu.intellij.toolwindows.CommentToolWindowRefreshNotifier;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.ProjectActivity;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -68,21 +69,22 @@ public class LoadCommentsProjectActivity implements ProjectActivity {
               event -> processPathChange(project, event.getOldPath(), event.getNewPath()));
             fileMoveEvents.forEach(
               event -> processPathChange(project, event.getOldPath(), event.getNewPath()));
+            project.getMessageBus().syncPublisher(CommentToolWindowRefreshNotifier.TOPIC).refresh();
           }
         }
 
         private void processPathChange(@NotNull Project project, String oldPath, String newPath) {
           String oldRelativePath = project.getService(CommentDbService.class)
             .getRelativePath(project,
-            oldPath);
+              oldPath);
           String newRelativePath = project.getService(CommentDbService.class)
             .getRelativePath(project,
-            newPath);
+              newPath);
           // 如果路径发生变化，更新数据库中的数据
           if (!oldRelativePath.equals(newRelativePath)) {
             project.getService(CommentDbService.class)
               .updateRelativePathByRelativePath(oldRelativePath,
-              newRelativePath);
+                newRelativePath);
           }
         }
       });
