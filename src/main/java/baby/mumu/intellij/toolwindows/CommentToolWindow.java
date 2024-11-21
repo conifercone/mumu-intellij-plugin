@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
@@ -53,15 +54,19 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CommentToolWindow implements ToolWindowFactory {
 
-  private JBTable table; // 表格实例
-  private CommentTableModel tableModel; // 表格模型
-  private MouseAdapter mouseAdapter;
-  private JPanel mainPanel;
+  private final ConcurrentHashMap<Project, JBTable> tableMaps = new ConcurrentHashMap<>(); // 表格实例
+  private final ConcurrentHashMap<Project, CommentTableModel> tableModelMaps = new ConcurrentHashMap<>(); // 表格模型
+  private final ConcurrentHashMap<Project, MouseAdapter> mouseAdapterMaps = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<Project, JPanel> mainPanelMaps = new ConcurrentHashMap<>();
+
+  @Override
+  public void init(@NotNull ToolWindow toolWindow) {
+    toolWindow.setIcon(Objects.requireNonNull(
+      IconLoader.findIcon("/icons/icon.svg", this.getClass())));
+  }
 
   @Override
   public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-    toolWindow.setIcon(Objects.requireNonNull(
-      IconLoader.findIcon("/icons/icon.svg", this.getClass())));
     createContentIfConnected(project, toolWindow);
     project.getMessageBus().connect()
       .subscribe(CommentToolWindowRefreshNotifier.TOPIC,
@@ -73,12 +78,12 @@ public class CommentToolWindow implements ToolWindowFactory {
     boolean connected = project.getService(CommentDbService.class).getConnected();
     List<MuMuComment> comments =
       connected ? project.getService(CommentDbService.class).findAll(null) : new ArrayList<>();
-    tableModel = new CommentTableModel(comments);
+    CommentTableModel tableModel = new CommentTableModel(comments);
 
     // 初始化内容
     // 主面板
-    mainPanel = new JPanel(new BorderLayout());
-    table = createTable(tableModel, project);
+    JPanel mainPanel = new JPanel(new BorderLayout());
+    JBTable table = createTable(tableModel, project);
     JBScrollPane scrollPane = new JBScrollPane(table);
     mainPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -87,6 +92,9 @@ public class CommentToolWindow implements ToolWindowFactory {
     toolWindow.getContentManager().addContent(content);
 
     // 添加刷新按钮
+    tableModelMaps.put(project, tableModel);
+    tableMaps.put(project, table);
+    mainPanelMaps.put(project, mainPanel);
     addRefreshButton(project, toolWindow);
     addSearchInput(project);
   }
@@ -100,9 +108,10 @@ public class CommentToolWindow implements ToolWindowFactory {
 
     // 设置超链接渲染器
     table.getColumnModel().getColumn(0).setCellRenderer(new HyperlinkCellRenderer());
-    mouseAdapter = getMouseAdapter(tableModel, project, table);
+    MouseAdapter mouseAdapter = getMouseAdapter(tableModel, project, table);
     // 添加点击事件监听器
     table.addMouseListener(mouseAdapter);
+    mouseAdapterMaps.put(project, mouseAdapter);
     return table;
   }
 
@@ -143,18 +152,24 @@ public class CommentToolWindow implements ToolWindowFactory {
         reloadComments(project, searchTextField.getText());
       }
     });
-    mainPanel.add(searchTextField, BorderLayout.NORTH);
+    if (mainPanelMaps.containsKey(project)) {
+      mainPanelMaps.get(project).add(searchTextField, BorderLayout.NORTH);
+    }
   }
 
   private void reloadComments(@NotNull Project project, String comment) {
     if (project.getService(CommentDbService.class).getConnected()) {
       List<MuMuComment> comments = project.getService(CommentDbService.class).findAll(comment);
-      tableModel = new CommentTableModel(comments);
-      table.setModel(tableModel);
-      table.removeMouseListener(mouseAdapter);
-      mouseAdapter = getMouseAdapter(tableModel, project, table);
-      table.addMouseListener(mouseAdapter);
-      table.getColumnModel().getColumn(0).setCellRenderer(new HyperlinkCellRenderer());
+      tableModelMaps.put(project, new CommentTableModel(comments));
+      if (tableMaps.containsKey(project)) {
+        tableMaps.get(project).setModel(tableModelMaps.get(project));
+        tableMaps.get(project).removeMouseListener(mouseAdapterMaps.get(project));
+        mouseAdapterMaps.put(project,
+          getMouseAdapter(tableModelMaps.get(project), project, tableMaps.get(project)));
+        tableMaps.get(project).addMouseListener(mouseAdapterMaps.get(project));
+        tableMaps.get(project).getColumnModel().getColumn(0)
+          .setCellRenderer(new HyperlinkCellRenderer());
+      }
     }
   }
 
