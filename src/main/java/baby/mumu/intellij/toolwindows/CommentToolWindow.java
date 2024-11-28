@@ -18,6 +18,7 @@ package baby.mumu.intellij.toolwindows;
 import baby.mumu.intellij.kotlin.dos.MuMuComment;
 import baby.mumu.intellij.kotlin.services.CommentDbService;
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -184,7 +185,13 @@ public class CommentToolWindow implements ToolWindowFactory {
     }
     VirtualFile virtualFile = file.findFileByRelativePath(relativePath);
     if (virtualFile != null) {
-      FileEditorManager.getInstance(project).openFile(virtualFile, true);
+      if (virtualFile.isDirectory()) {
+        // 如果是文件夹，使用 ProjectView 定位到该文件夹
+        ProjectView.getInstance(project).select(null, virtualFile, true);
+      } else {
+        // 如果是文件，打开文件编辑器
+        FileEditorManager.getInstance(project).openFile(virtualFile, true);
+      }
     }
   }
 }

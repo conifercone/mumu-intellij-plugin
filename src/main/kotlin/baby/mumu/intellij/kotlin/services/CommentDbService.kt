@@ -54,10 +54,12 @@ class CommentDbService : Disposable {
 
     fun connectDatabase(project: Project) {
         // 将路径转换为字符串并连接到数据库
-        val url = "jdbc:sqlite:" + File(
-            File(project.basePath, ".idea"),
-            "mumu_comments.db"
-        ).path.replace("\\", "/")
+        val ideaFolder = File(project.basePath, ".idea")
+        if (!ideaFolder.exists()) {
+            ideaFolder.mkdirs() // 创建 .idea 文件夹及必要的父目录
+        }
+        val dbFilePath = File(ideaFolder, "mumu_comments.db").path.replace("\\", "/")
+        val url = "jdbc:sqlite:$dbFilePath"
         val config = HikariConfig().apply {
             jdbcUrl = url
             driverClassName = "org.sqlite.JDBC"
