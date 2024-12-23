@@ -8,7 +8,7 @@ exposedVersion = '0.57.0'
 flywayVersion = "11.1.0"
 hikariCPVersion = "6.2.1"
 # bom version
-guavaBomVersion = '33.3.1-jre'
+guavaBomVersion = '33.4.0-jre'
 # plugin version
 kotlinPluginVersion = '2.1.0'
 intellijPluginVersion = '2.2.1'
