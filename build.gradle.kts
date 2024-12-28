@@ -23,7 +23,6 @@ val versionString = findProperty("version")!! as String
 version = if (versionString.contains("-")) "$versionString-$gitHash" else versionString
 
 repositories {
-    maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
     intellijPlatform {
         defaultRepositories()
@@ -75,7 +74,6 @@ dependencies {
         intellijIdeaUltimate(properties("intellijIdeaUltimate"))
         pluginVerifier()
         zipSigner()
-        instrumentationTools()
     }
     implementation(platform(libs.guava.bom))
     implementation(libs.bundles.exposed)
