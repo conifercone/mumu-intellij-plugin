@@ -3,6 +3,7 @@ import org.jetbrains.changelog.date
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 plugins {
@@ -17,13 +18,26 @@ fun properties(key: String) = providers.gradleProperty(key)
 val gitHash = providers.exec {
     commandLine("git", "rev-parse", "--short", "HEAD")
 }.standardOutput.asText.get().trim()
+val suffixes = listOf("-alpha", "-beta", "-snapshot", "-dev", "-test", "-pre")
+val now: ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC)
+
+@Suppress("SpellCheckingInspection")
+val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssXXX")
+val formattedTime: String = now.format(formatter)
+fun endsWithAny(input: String, suffixes: List<String>): Boolean {
+    return suffixes.any { input.endsWith(it, ignoreCase = true) }
+}
 
 group = findProperty("group")!! as String
 val versionString = findProperty("version")!! as String
-version = if (versionString.contains("-")) "$versionString-$gitHash" else versionString
+version =
+    if (endsWithAny(
+            versionString,
+            suffixes
+        )
+    ) "$versionString-$gitHash-$formattedTime" else versionString
 
 repositories {
-    maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
     intellijPlatform {
         defaultRepositories()
@@ -75,7 +89,6 @@ dependencies {
         intellijIdeaUltimate(properties("intellijIdeaUltimate"))
         pluginVerifier()
         zipSigner()
-        instrumentationTools()
     }
     implementation(platform(libs.guava.bom))
     implementation(libs.bundles.exposed)

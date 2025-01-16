@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.4.0] - 2025-01-16
+
+### Changed
+
+- Many dependencies have been upgraded.
+
 ## [1.3.1] - 2024-11-28
 
 ### Added
@@ -80,7 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add comments to files and folders.
 
 [//]: # (@formatter:off)
-[unreleased]: https://github.com/conifercone/mumu-intellij-plugin/compare/v1.3.1...develop
+[unreleased]: https://github.com/conifercone/mumu-intellij-plugin/compare/v1.4.0...develop
+[1.4.0]: https://github.com/conifercone/mumu/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/conifercone/mumu/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/conifercone/mumu/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/conifercone/mumu/compare/v1.1.1...v1.2.0
