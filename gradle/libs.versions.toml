@@ -5,7 +5,7 @@ commonsLang3Version = '3.17.0'
 jetbrainsAnnotationsVersion = '26.0.1'
 sqliteJdbcVersion = '3.47.2.0'
 exposedVersion = '0.58.0'
-flywayVersion = "11.1.1"
+flywayVersion = "11.2.0"
 hikariCPVersion = "6.2.1"
 # bom version
 guavaBomVersion = '33.4.0-jre'
