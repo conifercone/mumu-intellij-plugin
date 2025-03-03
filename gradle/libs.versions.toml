@@ -11,7 +11,7 @@ hikariCPVersion = "6.2.1"
 guavaBomVersion = '33.4.0-jre'
 # plugin version
 kotlinPluginVersion = '2.1.10'
-intellijPluginVersion = '2.2.1'
+intellijPluginVersion = '2.3.0'
 changelogPluginVersion = '2.2.1'
 
 [libraries]
