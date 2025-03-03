@@ -3,7 +3,7 @@
 mapstructVersion = '1.6.3'
 commonsLang3Version = '3.17.0'
 jetbrainsAnnotationsVersion = '26.0.2'
-sqliteJdbcVersion = '3.49.0.0'
+sqliteJdbcVersion = '3.49.1.0'
 exposedVersion = '0.59.0'
 flywayVersion = "11.3.2"
 hikariCPVersion = "6.2.1"
