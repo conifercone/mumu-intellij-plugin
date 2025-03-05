@@ -4,14 +4,14 @@ mapstructVersion = '1.6.3'
 commonsLang3Version = '3.17.0'
 jetbrainsAnnotationsVersion = '26.0.2'
 sqliteJdbcVersion = '3.49.1.0'
-exposedVersion = '0.59.0'
-flywayVersion = "11.3.2"
+exposedVersion = '0.60.0'
+flywayVersion = "11.3.4"
 hikariCPVersion = "6.2.1"
 # bom version
 guavaBomVersion = '33.4.0-jre'
 # plugin version
 kotlinPluginVersion = '2.1.10'
-intellijPluginVersion = '2.2.1'
+intellijPluginVersion = '2.3.0'
 changelogPluginVersion = '2.2.1'
 
 [libraries]
