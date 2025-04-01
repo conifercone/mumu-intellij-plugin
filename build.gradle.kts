@@ -115,7 +115,7 @@ tasks {
         // 源文件路径
         val hooksDir = file("${project.rootDir}/.git/hooks")
         val sourceDir = file("${project.rootDir}/scripts/git/hooks")
-        val updateLicenseShell = file("${project.rootDir}/update_license.sh")
+        val updateLicenseShell = file("${project.rootDir}/scripts/update_license.sh")
         // 将文件从源目录拷贝到目标目录
         from(sourceDir)
         // 目标目录
