@@ -5,10 +5,10 @@ commonsLang3Version = '3.17.0'
 jetbrainsAnnotationsVersion = '26.0.2'
 sqliteJdbcVersion = '3.49.1.0'
 exposedVersion = '0.61.0'
-flywayVersion = "11.6.0"
+flywayVersion = "11.7.1"
 hikariCPVersion = "6.3.0"
 # bom version
-guavaBomVersion = '33.4.6-jre'
+guavaBomVersion = '33.4.7-jre'
 # plugin version
 kotlinPluginVersion = '2.1.20'
 intellijPluginVersion = '2.5.0'
