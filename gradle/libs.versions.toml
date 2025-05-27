@@ -2,16 +2,16 @@
 # dependence version
 mapstructVersion = '1.6.3'
 commonsLang3Version = '3.17.0'
-jetbrainsAnnotationsVersion = '26.0.1'
-sqliteJdbcVersion = '3.47.2.0'
-exposedVersion = '0.58.0'
-flywayVersion = "11.1.1"
-hikariCPVersion = "6.2.1"
+jetbrainsAnnotationsVersion = '26.0.2'
+sqliteJdbcVersion = '3.49.1.0'
+exposedVersion = '0.61.0'
+flywayVersion = "11.8.2"
+hikariCPVersion = "6.3.0"
 # bom version
-guavaBomVersion = '33.4.0-jre'
+guavaBomVersion = '33.4.8-jre'
 # plugin version
-kotlinPluginVersion = '2.1.0'
-intellijPluginVersion = '2.2.1'
+kotlinPluginVersion = '2.1.21'
+intellijPluginVersion = '2.6.0'
 changelogPluginVersion = '2.2.1'
 
 [libraries]
