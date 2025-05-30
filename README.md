@@ -36,7 +36,7 @@ open-source!
 
 ## License
 
-[Apache License 2.0](LICENSE) © <a href="mailto:kaiyu.shan@outlook.com">kaiyu.shan</a>
+[Apache License 2.0](LICENSE) © <a href="mailto:kaiyu.shan@outlook.com">Kaiyu Shan</a>
 
 ## Contributors
 

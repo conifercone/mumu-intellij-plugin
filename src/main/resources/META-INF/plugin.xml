@@ -8,7 +8,7 @@
   <name>MuMu</name>
 
   <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-  <vendor email="kaiyu.shan@outlook.com" url="https://github.com/conifercone">kaiyu.shan</vendor>
+  <vendor email="kaiyu.shan@outlook.com" url="https://github.com/conifercone">Kaiyu Shan</vendor>
   <resource-bundle>messages.MuMuBundle</resource-bundle>
   <!-- Product and plugin compatibility requirements.
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
